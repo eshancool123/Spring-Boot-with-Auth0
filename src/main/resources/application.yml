@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: auth0
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Auth0
+    username: postgres
+    password: eshan
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-x0wze358kxnl6nt7.us.auth0.com/
+          audiences: https://api.myshop.com
+
+server:
+  port: 8081
+
+auth0:
+  audience: https://api.myshop.com
+  client-id: uzIlobXszf1H4Jb1aynA7PjSjNpSWc1A
+  client-secret: FVKKXUF10wb_vVo_uT741tg-9MPGFCvk0Y7AtdIKNWP3V0neXCyGdoT1BI40-xvk
+  connection: Username-Password-Authentication
