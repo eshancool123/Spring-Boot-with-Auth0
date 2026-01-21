@@ -11,6 +11,8 @@ import org.springframework.web.client.RestTemplate;
 
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.core.ParameterizedTypeReference;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.HashMap;
@@ -57,11 +59,17 @@ public class AuthService {
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            // Use ParameterizedTypeReference to avoid raw type warnings
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url, 
+                HttpMethod.POST, 
+                entity, 
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
             
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 // If Auth0 creation is successful, create user in local DB
-                Map body = response.getBody();
+                Map<String, Object> body = response.getBody();
                 String auth0Id = "auth0|" + body.get("_id"); // Construct Auth0 ID format usually 'auth0|id' or just 'id' depending on response
                 // The signup endpoint returns '_id'
                 if(auth0Id.startsWith("auth0|auth0|")){
@@ -122,7 +130,13 @@ public class AuthService {
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            // Use ParameterizedTypeReference to avoid raw type warnings
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url, 
+                HttpMethod.POST, 
+                entity, 
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
             return response.getBody();
         } catch (Exception e) {
             throw new RuntimeException("Login failed: " + e.getMessage());
