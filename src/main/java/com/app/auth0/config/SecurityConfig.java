@@ -25,11 +25,17 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/public/**").permitAll() // Allow public endpoints
+                .requestMatchers("/api/auth/**").permitAll() // Allow auth endpoints
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(jwtDecoder()))
-            );
+            )
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
+            .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(formLogin -> formLogin.disable())
+            ;
         return http.build();
     }
 
