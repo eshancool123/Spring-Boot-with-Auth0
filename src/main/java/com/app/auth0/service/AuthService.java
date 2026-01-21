@@ -5,13 +5,18 @@ import com.app.auth0.dto.RegistrationDto;
 import com.app.auth0.model.User;
 import com.app.auth0.repository.AuthRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.core.ParameterizedTypeReference;
 
 import java.util.Map;
 import java.util.Optional;
@@ -44,6 +49,12 @@ public class AuthService {
     }
 
     public Map<String, Object> register(RegistrationDto registrationDto) {
+        // Check if user with this email already exists locally before calling Auth0
+        // This prevents Auth0 creation if local DB would fail, keeping them in sync
+        if (authRepository.findByEmail(registrationDto.getEmail()).isPresent()) {
+             throw new RuntimeException("Email already pending or registered locally");
+        }
+        
         String url = issuerUri + "dbconnections/signup";
 
         Map<String, String> request = new HashMap<>();
