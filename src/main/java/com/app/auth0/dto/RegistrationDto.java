@@ -1,16 +1,28 @@
 package com.app.auth0.dto;
 
 public class RegistrationDto {
-    private String username;
+    private String firstname;
+    private String lastname;
     private String email;
     private String password;
+    private Number phonenumber;
+    private String gender;
+    private String address;
 
-    public String getUsername() {
-        return username;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getEmail() {
@@ -27,5 +39,29 @@ public class RegistrationDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Number getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(Number phonenumber) {
+        this.phonenumber = phonenumber;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

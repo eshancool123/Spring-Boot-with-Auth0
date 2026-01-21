@@ -62,7 +62,9 @@ public class AuthService {
         request.put("email", registrationDto.getEmail());
         request.put("password", registrationDto.getPassword());
         request.put("connection", connection);
-        request.put("username", registrationDto.getUsername());
+        // Using email as username for Auth0 since local username field was removed
+        // or we could construct one, but email is safer for uniqueness
+        request.put("username", registrationDto.getEmail()); 
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -87,11 +89,11 @@ public class AuthService {
                      auth0Id = auth0Id.replace("auth0|auth0|", "auth0|");
                 }
                 
-                saveUserLocally(auth0Id, registrationDto.getEmail(), registrationDto.getUsername());
+                saveUserLocally(auth0Id, registrationDto);
                 
                 Map<String, Object> responseMap = new HashMap<>();
                 responseMap.put("email", registrationDto.getEmail());
-                responseMap.put("password", registrationDto.getPassword());
+                // Don't return password in response
                 responseMap.put("message", "User registered successfully");
                 return responseMap;
             }
@@ -101,23 +103,30 @@ public class AuthService {
         return null;
     }
 
-    private User saveUserLocally(String auth0Id, String email, String username) {
+    private User saveUserLocally(String auth0Id, RegistrationDto registrationDto) {
         // Check if user already exists
         Optional<User> existingUser = authRepository.findByAuth0Id(auth0Id);
 
         if (existingUser.isPresent()) {
             // Update existing user information
             User user = existingUser.get();
-            if (email != null) user.setEmail(email);
-            if (username != null) user.setUsername(username);
+            user.setFirstname(registrationDto.getFirstname());
+            user.setLastname(registrationDto.getLastname());
+            user.setEmail(registrationDto.getEmail());
+            user.setPhonenumber(registrationDto.getPhonenumber());
+            user.setGender(registrationDto.getGender());
+            user.setAddress(registrationDto.getAddress());
             return authRepository.save(user);
         }
 
         User newUser = new User();
         newUser.setAuth0Id(auth0Id);
-        newUser.setEmail(email);
-        // Default username to email if not provided, or handle uniqueness logic
-        newUser.setUsername(username != null ? username : email);
+        newUser.setFirstname(registrationDto.getFirstname());
+        newUser.setLastname(registrationDto.getLastname());
+        newUser.setEmail(registrationDto.getEmail());
+        newUser.setPhonenumber(registrationDto.getPhonenumber());
+        newUser.setGender(registrationDto.getGender());
+        newUser.setAddress(registrationDto.getAddress());
         
         return authRepository.save(newUser);
     }
